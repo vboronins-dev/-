@@ -1,0 +1,49 @@
+import pygame
+import random
+import sys
+pygame.init()
+WIDTH, HEIGHT = 800, 600
+FPS = 60
+WHITE = (255, 255, 255)
+RED = (255, 50, 50)
+BLUE = (50, 50, 255)
+GREEN = (50, 255, 50)
+BLACK = (0, 0, 0)
+class Unit:
+    def init(self, x, y, color, hp=100, speed=5, damage=10):
+        self.rect = pygame.Rect(x, y, 40, 60)
+        self.color = color
+        self.hp = hp
+        self.max_hp = hp
+        self.speed = speed
+        self.damage = damage
+        self.alive = True
+    def draw(self, surface):
+        pygame.draw.rect(surface, self.color, self.rect, border_radius=10)
+        pygame.draw.rect(surface, BLACK, self.rect, 2, border_radius=10)
+        if self.hp < self.max_hp:
+            bar_width = 40
+            bar_height = 5
+            bar_x = self.rect.x
+            bar_y = self.rect.y - 10
+            pygame.draw.rect(surface, BLACK, (bar_x, bar_y, bar_width, bar_height))
+            fill_width = int((self.hp / self.max_hp) * bar_width)
+            pygame.draw.rect(surface, GREEN, (bar_x, bar_y, fill_width, bar_height))
+    def take_damage(self, amount):
+        self.hp -= amount
+        if self.hp <= 0:
+            self.alive = False
+            return True  
+        return False  
+    def attack(self, target):
+        target.take_damage(self.damage)
+class Player(Unit):
+    def update(self, keys):
+        if keys[pygame.K_a] and self.rect.left > 0:
+            self.rect.x -= self.speed
+        if keys[pygame.K_d] and self.rect.right < WIDTH:
+            self.rect.x += self.speed
+        if keys[pygame.K_w] and self.rect.top > 0:
+            self.rect.y -= self.speed
+        if keys[pygame.K_s] and self.rect.bottom < HEIGHT:
+            self.rect.y += self.speed
