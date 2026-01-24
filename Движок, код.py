@@ -106,6 +106,41 @@ def main():
         keys = pygame.key.get_pressed()
         player.update(keys)
 
+        for enemy in enemies[:]:
+            enemy.update(player.rect)
+            if enemy.rect.colliderect(player.rect):
+                enemy.attack(player)
+                if not player.alive:
+                    running = False
+
+        for enemy in enemies[:]:
+            if not enemy.alive:
+                enemies.remove(enemy)
+                score += 10
+
+        screen.fill(WHITE)
+        player.draw(screen)
+
+        for enemy in enemies:
+            enemy.draw(screen)
+
+        score_text = font.render(f"Очки: {score}", True, BLACK)
+        hp_text = font.render(f"HP: {player.hp}", True, BLACK)
+        screen.blit(score_text, (10, 10))
+        screen.blit(hp_text, (10, 50))
+
+        instruction = font.render("WASD - двигаться, Клик мыши - создать врага", True, BLACK)
+        screen.blit(instruction, (WIDTH // 2 - 250, HEIGHT - 40))
+
+        pygame.display.flip()
+        clock.tick(FPS)
+
+
+    pygame.quit()
+    sys.exit()
+
+if __name__ == "main":
+    main()
 
 
 
