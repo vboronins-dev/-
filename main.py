@@ -13,6 +13,12 @@ GREEN = (50, 200, 50)
 YELLOW = (255, 255, 0)
 GRAY = (200, 200, 200)
 LIGHT_BLUE = (100, 150, 255)
+ORANGE = (255, 165, 0)
+PURPLE = (128, 0, 128)
+
+PLAYER_SPEED = 25
+ENEMY_SPEED = 5
+ENEMY_SPAWN_TIME = 1000
 
 class Button:
     def __init__(self, x, y, w, h, text, color=LIGHT_BLUE):
@@ -123,7 +129,7 @@ def show_menu():
         screen.blit(subtitle, subtitle_rect)
         start_button.draw(screen, font_normal)
         quit_button.draw(screen, font_normal)
-        instruction = font_small.render("Управление: WASD - движение, клик мыши - создать врага", True, GRAY)
+        instruction = font_small.render("Управление: WASD - движение, ESC - меню", True, GRAY)
         instruction_rect = instruction.get_rect(center=(WIDTH//2, HEIGHT - 50))
         screen.blit(instruction, instruction_rect)
         pygame.display.flip()
@@ -162,10 +168,11 @@ def run_game():
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Clash-like Game")
     clock = pygame.time.Clock()
-    player = Player(WIDTH // 2, HEIGHT // 2, BLUE, hp=200, speed=5)
+    player = Player(WIDTH // 2, HEIGHT // 2, BLUE, hp=200, speed=PLAYER_SPEED)
     enemies = []
     last_enemy_time = 0
     score = 0
+    last_score_time = pygame.time.get_ticks()
     font = pygame.font.SysFont(None, 36)
     running = True
     while running:
@@ -174,16 +181,16 @@ def run_game():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                mouse_x, mouse_y = pygame.mouse.get_pos()
-                enemies.append(Enemy(mouse_x, mouse_y, RED, hp=50, speed=2, damage=10))
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     return "menu"
-        if current_time - last_enemy_time > 2000:
+        if current_time - last_score_time >= 1000:
+            score += 100
+            last_score_time = current_time
+        if current_time - last_enemy_time > ENEMY_SPAWN_TIME:
             enemy_x = random.randint(0, WIDTH - 40)
             enemy_y = random.randint(0, HEIGHT - 60)
-            enemies.append(Enemy(enemy_x, enemy_y, RED, hp=50, speed=2, damage=10))
+            enemies.append(Enemy(enemy_x, enemy_y, RED, hp=50, speed=ENEMY_SPEED, damage=10))
             last_enemy_time = current_time
         keys = pygame.key.get_pressed()
         player.update(keys)
@@ -206,7 +213,7 @@ def run_game():
         hp_text = font.render(f"HP: {player.hp}", True, BLACK)
         screen.blit(score_text, (10, 10))
         screen.blit(hp_text, (10, 50))
-        instruction = font.render("WASD - двигаться, Клик мыши - создать врага, ESC - меню", True, BLACK)
+        instruction = font.render("WASD - двигаться, ESC - меню", True, BLACK)
         screen.blit(instruction, (WIDTH // 2 - 300, HEIGHT - 40))
         pygame.display.flip()
         clock.tick(FPS)
