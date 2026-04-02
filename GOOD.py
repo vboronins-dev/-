@@ -3,7 +3,7 @@ import random
 import sys
 
 pygame.init()
-WIDTH, HEIGHT = 800, 600
+WIDTH, HEIGHT = 1200, 1000
 FPS = 60
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -16,6 +16,7 @@ LIGHT_BLUE = (100, 150, 255)
 ORANGE = (255, 165, 0)
 PURPLE = (160, 32, 240)
 GOLD = (255, 215, 0)
+APPLE_RED = (255, 0, 0)
 
 PLAYER_SPEED = 25
 ENEMY_SPEED = 5
@@ -29,7 +30,7 @@ DIFFICULTY_SETTINGS = {
         "enemy_hp": 30,
         "enemy_damage": 5,
         "color": GREEN,
-        "desc": "Медленные враги, редко"
+        "desc": "Медленные враги, очень просто"
     },
     "normal": {
         "player_speed": 25,
@@ -38,7 +39,7 @@ DIFFICULTY_SETTINGS = {
         "enemy_hp": 50,
         "enemy_damage": 10,
         "color": LIGHT_BLUE,
-        "desc": "Сбалансировано"
+        "desc": "Сбалансировано, средне"
     },
     "hard": {
         "player_speed": 20,
@@ -47,7 +48,7 @@ DIFFICULTY_SETTINGS = {
         "enemy_hp": 70,
         "enemy_damage": 15,
         "color": ORANGE,
-        "desc": "Быстрые враги, часто"
+        "desc": "Быстрые враги, сложно"
     },
     "hardcore": {
         "player_speed": 15,
@@ -144,10 +145,16 @@ class Enemy(Unit):
         elif self.rect.y > player_rect.y:
             self.rect.y -= self.speed
 
+class Apple:
+    def __init__(self, x, y):
+        self.rect = pygame.Rect(x, y, 30, 30)
+        self.color = APPLE_RED
+        self.alive = True
+        self.points = 50
 
 def show_menu():
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
-    pygame.display.set_caption("Clash-like Game - Меню")
+    pygame.display.set_caption("Super Game - Меню")
     clock = pygame.time.Clock()
     font_large = pygame.font.SysFont('Arial', 48, bold=True)
     font_normal = pygame.font.SysFont('Arial', 32)
@@ -202,7 +209,7 @@ def show_menu():
 
         screen.fill((30, 30, 50))
 
-        title = font_large.render("CLASH-LIKE GAME", True, YELLOW)
+        title = font_large.render("SUPER GAME", True, YELLOW)
         title_rect = title.get_rect(center=(WIDTH // 2, 50))
         screen.blit(title, title_rect)
 
