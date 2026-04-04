@@ -17,6 +17,7 @@ ORANGE = (255, 165, 0)
 PURPLE = (160, 32, 240)
 GOLD = (255, 215, 0)
 APPLE_RED = (255, 0, 0)
+APPLE_POINTS = 250
 
 PLAYER_SPEED = 25
 ENEMY_SPEED = 5
@@ -148,9 +149,14 @@ class Enemy(Unit):
 class Apple:
     def __init__(self, x, y):
         self.rect = pygame.Rect(x, y, 30, 30)
-        self.color = APPLE_RED
+        self.color = GREEN
         self.alive = True
-        self.points = 50
+        self.points = 250
+
+    def draw(self, surface):
+        pygame.draw.circle(surface, self.color, self.rect.center, 15)
+        pygame.draw.line(surface, GREEN, (self.rect.centerx - 5, self.rect.top - 5), (self.rect.centerx, self.rect.top),3)
+        pygame.draw.rect(surface, BLACK, self.rect, 2, border_radius=15)
 
 def show_menu():
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -298,7 +304,10 @@ def run_game(difficulty):
 
     player = Player(WIDTH // 2, HEIGHT // 2, BLUE, hp=200, speed=settings["player_speed"])
     enemies = []
+    apples = []
     last_enemy_time = 0
+    last_apple_time = 0
+    APPLE_SPAWN_TIME = 5000
     score = 0
     last_score_time = pygame.time.get_ticks()
     font = pygame.font.SysFont(None, 36)
@@ -320,6 +329,11 @@ def run_game(difficulty):
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     return "menu"
+        if current_time - last_apple_time > APPLE_SPAWN_TIME:
+            apple_x = random.randint(0, WIDTH - 30)
+            apple_y = random.randint(0, HEIGHT - 30)
+            apples.append(Apple(apple_x, apple_y))
+            last_apple_time = current_time
         if current_time - last_score_time >= 1000:
             score += 100
             last_score_time = current_time
@@ -348,10 +362,18 @@ def run_game(difficulty):
                 enemies.remove(enemy)
                 score += 10
 
+        for apple in apples[:]:
+            if apple.rect.colliderect(player.rect):
+                score += apple.points
+                apples.remove(apple)
+
         screen.fill(WHITE)
         player.draw(screen)
         for enemy in enemies:
             enemy.draw(screen)
+
+        for apple in apples:
+            apple.draw(screen)
 
         score_text = font.render(f"Очки: {score}", True, BLACK)
         hp_text = font.render(f"HP: {player.hp}", True, BLACK)
@@ -360,6 +382,9 @@ def run_game(difficulty):
 
         diff_display = difficulty_font.render(f"Сложность: {difficulty_names[difficulty]}", True, BLACK)
         screen.blit(diff_display, (10, 90))
+
+        apple_info = font.render(f"Яблоки: +{APPLE_POINTS if 'APPLE_POINTS' in dir() else 50} очков", True, BLACK)
+        screen.blit(apple_info, (10, 130))
 
         instruction = font.render("WASD - двигаться, ESC - меню", True, BLACK)
         screen.blit(instruction, (WIDTH // 2 - 150, HEIGHT - 40))
