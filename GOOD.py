@@ -3,7 +3,7 @@ import random
 import sys
 
 pygame.init()
-WIDTH, HEIGHT = 1200, 1000
+WIDTH, HEIGHT = 1400, 870
 FPS = 60
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -133,6 +133,12 @@ class Player(Unit):
             self.rect.y -= self.speed
         if keys[pygame.K_s] and self.rect.bottom < HEIGHT:
             self.rect.y += self.speed
+
+
+        self.rect.left = max(0, self.rect.left)
+        self.rect.right = min(WIDTH, self.rect.right)
+        self.rect.top = max(0, self.rect.top)
+        self.rect.bottom = min(HEIGHT, self.rect.bottom)
 
 
 class Enemy(Unit):
@@ -267,6 +273,7 @@ def show_menu():
 
 def show_game_over(score):
     screen = pygame.display.get_surface()
+    screen.fill((0, 0, 0))
     font = pygame.font.SysFont('Arial', 72, bold=True)
     font_small = pygame.font.SysFont('Arial', 36)
     overlay = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
@@ -354,6 +361,7 @@ def run_game(difficulty):
             if enemy.rect.colliderect(player.rect):
                 enemy.attack(player)
                 if not player.alive:
+                    player.hp = 0
                     result = show_game_over(score)
                     return result
 
@@ -376,15 +384,13 @@ def run_game(difficulty):
             apple.draw(screen)
 
         score_text = font.render(f"Очки: {score}", True, BLACK)
-        hp_text = font.render(f"HP: {player.hp}", True, BLACK)
+        display_hp = 0 if not player.alive else max(0, player.hp)
+        hp_text = font.render(f"HP: {display_hp}", True, BLACK)
         screen.blit(score_text, (10, 10))
         screen.blit(hp_text, (10, 50))
 
         diff_display = difficulty_font.render(f"Сложность: {difficulty_names[difficulty]}", True, BLACK)
         screen.blit(diff_display, (10, 90))
-
-        apple_info = font.render(f"Яблоки: +{APPLE_POINTS if 'APPLE_POINTS' in dir() else 50} очков", True, BLACK)
-        screen.blit(apple_info, (10, 130))
 
         instruction = font.render("WASD - двигаться, ESC - меню", True, BLACK)
         screen.blit(instruction, (WIDTH // 2 - 150, HEIGHT - 40))
