@@ -19,14 +19,14 @@ GOLD = (255, 215, 0)
 APPLE_RED = (255, 0, 0)
 APPLE_POINTS = 250
 
-PLAYER_SPEED = 25
-ENEMY_SPEED = 5
+PLAYER_SPEED = 18.75
+ENEMY_SPEED = 3.75
 ENEMY_SPAWN_TIME = 1000
 
 DIFFICULTY_SETTINGS = {
     "easy": {
-        "player_speed": 30,
-        "enemy_speed": 3,
+        "player_speed": 22.5,
+        "enemy_speed": 3.75,
         "enemy_spawn_time": 2000,
         "enemy_hp": 30,
         "enemy_damage": 5,
@@ -34,8 +34,8 @@ DIFFICULTY_SETTINGS = {
         "desc": "Медленные враги, очень просто"
     },
     "normal": {
-        "player_speed": 25,
-        "enemy_speed": 5,
+        "player_speed": 18.75,
+        "enemy_speed": 3.75,
         "enemy_spawn_time": 1000,
         "enemy_hp": 50,
         "enemy_damage": 10,
@@ -43,8 +43,8 @@ DIFFICULTY_SETTINGS = {
         "desc": "Сбалансировано, средне"
     },
     "hard": {
-        "player_speed": 20,
-        "enemy_speed": 7,
+        "player_speed": 15,
+        "enemy_speed": 5.25,
         "enemy_spawn_time": 700,
         "enemy_hp": 70,
         "enemy_damage": 15,
@@ -53,8 +53,8 @@ DIFFICULTY_SETTINGS = {
     },
     "hardcore": {
         "player_speed": 15,
-        "enemy_speed": 10,
-        "enemy_spawn_time": 400,
+        "enemy_speed": 7.5,
+        "enemy_spawn_time": 1500,
         "enemy_hp": 100,
         "enemy_damage": 20,
         "color": PURPLE,
@@ -312,9 +312,8 @@ def run_game(difficulty):
     player = Player(WIDTH // 2, HEIGHT // 2, BLUE, hp=200, speed=settings["player_speed"])
     enemies = []
     apples = []
+    apples.append(Apple(random.randint(0, WIDTH - 30), random.randint(0, HEIGHT - 30)))
     last_enemy_time = 0
-    last_apple_time = 0
-    APPLE_SPAWN_TIME = 5000
     score = 0
     last_score_time = pygame.time.get_ticks()
     font = pygame.font.SysFont(None, 36)
@@ -336,11 +335,6 @@ def run_game(difficulty):
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     return "menu"
-        if current_time - last_apple_time > APPLE_SPAWN_TIME:
-            apple_x = random.randint(0, WIDTH - 30)
-            apple_y = random.randint(0, HEIGHT - 30)
-            apples.append(Apple(apple_x, apple_y))
-            last_apple_time = current_time
         if current_time - last_score_time >= 1000:
             score += 100
             last_score_time = current_time
@@ -374,6 +368,8 @@ def run_game(difficulty):
             if apple.rect.colliderect(player.rect):
                 score += apple.points
                 apples.remove(apple)
+                new_apple = Apple(random.randint(0, WIDTH - 30), random.randint(0, HEIGHT - 30))
+                apples.append(new_apple)
 
         screen.fill(WHITE)
         player.draw(screen)
