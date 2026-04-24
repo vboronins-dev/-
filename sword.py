@@ -339,7 +339,7 @@ class Apple:
 
 def show_menu():
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
-    pygame.display.set_caption("Killer Time - Меню")
+    pygame.display.set_caption("Green Ninja - Меню")
     clock = pygame.time.Clock()
     font_title = pygame.font.SysFont('Arial', 72, bold=True)
     font_normal = pygame.font.SysFont('Arial', 36)
@@ -404,10 +404,10 @@ def show_menu():
 
         screen.blit(background, (0, 0))
 
-        title_shadow = font_title.render("Killer Time", True, (0, 0, 0))
+        title_shadow = font_title.render("Green Ninja", True, (0, 0, 0))
         title_shadow_rect = title_shadow.get_rect(center=(WIDTH // 2 + 5, 85))
         screen.blit(title_shadow, title_shadow_rect)
-        title = font_title.render("Killer Time", True, YELLOW)
+        title = font_title.render("Green Ninja", True, YELLOW)
         title_rect = title.get_rect(center=(WIDTH // 2, 80))
         screen.blit(title, title_rect)
 
@@ -490,7 +490,7 @@ def show_game_over(score):
 
 def run_game(difficulty):
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
-    pygame.display.set_caption("Killer Time Game")
+    pygame.display.set_caption("Green Ninja Game")
     clock = pygame.time.Clock()
 
     settings = DIFFICULTY_SETTINGS[difficulty]
